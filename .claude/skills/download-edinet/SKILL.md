@@ -12,8 +12,10 @@ description: EDINET APIから有価証券報告書・決算短信をダウンロ
 ## 前提条件
 
 - EDINET API キー（Subscription-Key）が必要
-- 環境変数 `EDINET_API_KEY` に設定されていることを想定
-- 未設定の場合は https://api.edinet-fsa.go.jp/api/auth/index.aspx?mode=1 での登録を案内する
+- `.env` ファイルに `EDINET_API_KEY=キー` の形式で設定
+- 未設定の場合は [edinet-api-setup.md](../../../docs/edinet-api-setup.md) を参照して設定を案内する
+- **重要**: APIキーを直接 curl コマンドに埋め込まない（会話ログに露出するため）
+- `scripts/edinet_api.py` 経由で API 呼び出しを行う
 
 ---
 
@@ -33,38 +35,32 @@ description: EDINET APIから有価証券報告書・決算短信をダウンロ
 
 ### 2. docID の検索
 
-書類一覧APIで対象企業の開示書類を検索する。
+Python スクリプト `scripts/edinet_api.py` で対象企業の開示書類を検索する。
 
-**エンドポイント:**
+**基本コマンド:**
+```bash
+python scripts/edinet_api.py search \
+  --date 提出日 \
+  --sec-code 証券コード \
+  [--ordinance-code 府令コード] \
+  [--form-code 様式コード]
 ```
-https://api.edinet-fsa.go.jp/api/v2/documents.json
-```
 
-**パラメータ:**
-| パラメータ | 値 | 必須 |
-|---|---|---|
-| `date` | 検索対象日（YYYY-MM-DD） | Yes |
-| `type` | `2`（メタデータ + 書類一覧） | Yes |
-| `Subscription-Key` | APIキー | Yes |
-
-**レスポンス構造:**
+**レスポンス形式:**
 ```json
-{
-  "metadata": { "status": "200", "message": "OK" },
-  "results": [
-    {
-      "docID": "S100XXXX",
-      "secCode": "58190",
-      "edinetCode": "EXXXXX",
-      "filerName": "カナレ電気株式会社",
-      "docDescription": "有価証券報告書...",
-      "ordinanceCode": "010",
-      "formCode": "030000",
-      "periodEnd": "2024-12-31",
-      "submitDateTime": "2025-03-27 09:00"
-    }
-  ]
-}
+[
+  {
+    "docID": "S100XXXX",
+    "secCode": "58190",
+    "edinetCode": "EXXXXX",
+    "filerName": "カナレ電気株式会社",
+    "docDescription": "有価証券報告書...",
+    "ordinanceCode": "010",
+    "formCode": "030000",
+    "periodEnd": "2024-12-31",
+    "submitDateTime": "2025-03-27 09:00"
+  }
+]
 ```
 
 **書類種別フィルタ:**
@@ -78,7 +74,7 @@ https://api.edinet-fsa.go.jp/api/v2/documents.json
 
 決算短信は取引所開示のため ordinanceCode/formCode が不定。`secCode` + `docDescription` の文字列マッチで絞り込む。
 
-**証券コードの注意:** EDINET内では5桁（末尾0付き）。4桁コードの場合は先頭4桁で前方一致させる。
+**証券コードの注意:** EDINET内では5桁（末尾0付き）。4桁コードの場合は先頭4桁で前方一致させる（スクリプトが自動対応）。
 
 ### 3. 提出日の推定と日付範囲検索
 
@@ -94,17 +90,23 @@ https://api.edinet-fsa.go.jp/api/v2/documents.json
 想定月の1日〜末日を順に検索する。見つかった時点で終了。
 
 ```bash
-# 例: 12月決算企業の有報を3月中に検索
+# 例: 12月決算企業の有報を2025年3月中に検索
 for day in $(seq 1 31); do
   d=$(printf "2025-03-%02d" $day)
-  result=$(curl -s "https://api.edinet-fsa.go.jp/api/v2/documents.json?date=$d&type=2&Subscription-Key=$EDINET_API_KEY" \
+  result=$(python scripts/edinet_api.py search \
+    --date "$d" \
+    --sec-code 5819 \
+    --ordinance-code 010 \
+    --form-code 030000 2>/dev/null \
     | python3 -c "
 import json, sys
-data = json.load(sys.stdin)
-for doc in data.get('results', []):
-    if doc.get('secCode','')[:4] == '$0' and doc.get('ordinanceCode') == '010' and doc.get('formCode') == '030000':
-        print(doc['docID'])
-" 2>/dev/null)
+try:
+    data = json.load(sys.stdin)
+    if data:
+        print(data[0]['docID'])
+except:
+    pass
+")
   if [ -n "$result" ]; then
     echo "Found on $d: $result"
     break
@@ -115,9 +117,12 @@ done
 
 ### 4. 書類ダウンロード
 
-**エンドポイント:**
-```
-https://api.edinet-fsa.go.jp/api/v2/documents/{docID}
+**基本コマンド:**
+```bash
+python scripts/edinet_api.py download \
+  --doc-id {docID} \
+  --type {type} \
+  --output {保存先パス}
 ```
 
 **取得形式（type パラメータ）:**
@@ -129,21 +134,28 @@ https://api.edinet-fsa.go.jp/api/v2/documents/{docID}
 | `3` | PDF | 代替書類（英文等） | 英文開示がある場合 |
 | `5` | CSV | 構造化財務データ | **推奨**: 数値抽出が正確で効率的 |
 
+**実行例:**
 ```bash
 # PDF取得
-curl -o doc.zip \
-  "https://api.edinet-fsa.go.jp/api/v2/documents/{docID}?type=2&Subscription-Key=$EDINET_API_KEY"
-unzip doc.zip -d temp/ && mv temp/*.pdf {保存先}
+python scripts/edinet_api.py download \
+  --doc-id S100XXXX \
+  --type 2 \
+  --output temp/doc.zip
+unzip temp/doc.zip -d temp/ && mv temp/*.pdf {保存先}
 
 # CSV取得（構造化データ）
-curl -o doc_csv.zip \
-  "https://api.edinet-fsa.go.jp/api/v2/documents/{docID}?type=5&Subscription-Key=$EDINET_API_KEY"
-unzip doc_csv.zip -d temp_csv/
+python scripts/edinet_api.py download \
+  --doc-id S100XXXX \
+  --type 5 \
+  --output temp/doc_csv.zip
+unzip temp/doc_csv.zip -d {保存先}/csv/
 
 # XBRL一式取得
-curl -o doc_xbrl.zip \
-  "https://api.edinet-fsa.go.jp/api/v2/documents/{docID}?type=1&Subscription-Key=$EDINET_API_KEY"
-unzip doc_xbrl.zip -d temp_xbrl/
+python scripts/edinet_api.py download \
+  --doc-id S100XXXX \
+  --type 1 \
+  --output temp/doc_xbrl.zip
+unzip temp/doc_xbrl.zip -d {保存先}/xbrl/
 ```
 
 ### 5. 推奨ダウンロード手順
@@ -172,7 +184,8 @@ unzip doc_xbrl.zip -d temp_xbrl/
 
 ### 7. 注意点
 
-- **レートリミット**: API呼び出しは秒間3回以内（`sleep 0.5` を挟む）
+- **APIキーの安全性**: `scripts/edinet_api.py` を使用することでAPIキーが会話ログに露出しない
+- **レートリミット**: スクリプトが自動的に秒間3回以内に制御（0.35秒間隔）
 - **ZIP展開**: 全形式がZIPで返される。一時ディレクトリに展開してからリネーム・移動する
 - **保存期間**: 過去5年分の書類が取得可能
 - **CSV対応開始**: 2024年4月以降の提出書類からCSV取得可能。それ以前はPDFのみ

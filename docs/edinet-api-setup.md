@@ -28,41 +28,74 @@
 - **Edge** を使うか、`https://api.edinet-fsa.go.jp` のポップアップを許可しておく
 - 表示されたキーは必ず控えておく
 
-## 4. 環境変数に設定
+## 4. 環境設定
+
+### 4-1. `.env` ファイルの作成
+
+プロジェクトルートに `.env` ファイルを作成（**推奨**: APIキーが会話ログに露出しない）
 
 ```bash
-# .zshrc や .bashrc に追加
-export EDINET_API_KEY="取得したAPIキー"
+# .env.example をコピーして作成
+cp .env.example .env
 
-# 反映
-source ~/.zshrc
+# エディタで .env を開き、取得したAPIキーを入力
+# EDINET_API_KEY=ここに取得したAPIキーを貼り付け
 ```
 
-**`.env` ファイルを使う場合:**
+※ `.env` は既に `.gitignore` で除外設定済み。Git にコミットされないので安全です。
+
+### 4-2. 依存パッケージのインストール
 
 ```bash
-# プロジェクトルートに .env を作成（.gitignore 済み）
-EDINET_API_KEY=取得したAPIキー
+# uv でインストール（推奨）
+uv sync
+
+# または pip でインストール
+pip install python-dotenv requests
 ```
 
 ## 5. 動作確認
 
 ```bash
-# 本日の開示書類一覧を取得
-curl -s "https://api.edinet-fsa.go.jp/api/v2/documents.json?date=$(date +%Y-%m-%d)&type=2&Subscription-Key=$EDINET_API_KEY" \
-  | python3 -m json.tool | head -20
+# Python スクリプト経由で本日の開示書類一覧を取得
+python scripts/edinet_api.py search --date $(date +%Y-%m-%d)
 ```
 
-`"status": "200"` が返ってくれば成功。
+JSON 形式で書類一覧が返ってくれば成功。
 
-## 6. API 概要
+## 6. 使用例
 
-### エンドポイント
+### 書類を検索（証券コード指定）
 
-| API | URL | 用途 |
-|---|---|---|
-| 書類一覧 | `https://api.edinet-fsa.go.jp/api/v2/documents.json` | 提出日で書類を検索 |
-| 書類取得 | `https://api.edinet-fsa.go.jp/api/v2/documents/{docID}` | 書類をダウンロード |
+```bash
+# カナレ電気（5819）の2025年3月27日の開示書類を検索
+python scripts/edinet_api.py search \
+  --date 2025-03-27 \
+  --sec-code 5819
+
+# 有価証券報告書に絞り込み
+python scripts/edinet_api.py search \
+  --date 2025-03-27 \
+  --sec-code 5819 \
+  --ordinance-code 010 \
+  --form-code 030000
+```
+
+### 書類をダウンロード
+
+```bash
+# PDF取得
+python scripts/edinet_api.py download \
+  --doc-id S100XXXX \
+  --type 2 \
+  --output data/report.zip
+
+# CSV取得（構造化財務データ、2024年4月以降）
+python scripts/edinet_api.py download \
+  --doc-id S100XXXX \
+  --type 5 \
+  --output data/report_csv.zip
+```
 
 ### ダウンロード形式（type パラメータ）
 
@@ -82,7 +115,7 @@ curl -s "https://api.edinet-fsa.go.jp/api/v2/documents.json?date=$(date +%Y-%m-%
 
 ### 制約事項
 
-- **レートリミット**: 秒間3リクエストまで
+- **レートリミット**: 秒間3リクエストまで（スクリプトで自動対応）
 - **取得可能期間**: 過去5年分
 - **証券コード**: EDINET 内では5桁（末尾0付き）。例: カナレ電気 `5819` → `58190`
 
