@@ -52,9 +52,9 @@ uv run pytest tests/ -v
 | `/corporate-report` | 企業分析レポートとチャートを生成 | `/corporate-report 5819 カナレ電気` |
 | `/download-edinet` | EDINET APIから書類をダウンロード | `/download-edinet 5819 カナレ電気` |
 | `/extract-data` | PDFから財務データを抽出 | `/extract-data path/to/report.pdf` |
-| `/update-report` | 既存レポートに新決算データを反映 | `/update-report 5819_canare` |
-| `/update-price` | 株価更新してバリュエーション再計算 | `/update-price 5819_canare 1250` |
-| `/compare` | 複数企業を横比較 | `/compare 5819_canare 6857_advantest` |
+| `/update-report` | 既存レポートに新決算データを反映 | `/update-report reports/5819_canare` |
+| `/update-price` | 株価更新してバリュエーション再計算 | `/update-price reports/5819_canare 1250` |
+| `/compare` | 複数企業を横比較 | `/compare reports/5819_canare reports/6857_advantest` |
 
 詳細は [skills.md](skills.md) を参照。
 
@@ -71,13 +71,14 @@ corporate-reports/
 ├── docs/                   # ドキュメント
 ├── .claude/
 │   └── skills/            # Claude Code スキル定義
-└── [証券コード]_[企業名]/  # 企業ごとのディレクトリ
-    ├── report.md          # 分析レポート
-    ├── charts.html        # 財務チャート
-    └── data/              # 元データ（.gitignore済み）
-        ├── pdf/
-        ├── csv/
-        └── xbrl/
+└── reports/               # 企業レポート
+    └── [証券コード]_[企業名]/
+        ├── report.md      # 分析レポート
+        ├── charts.html    # 財務チャート
+        └── data/          # 元データ（.gitignore済み）
+            ├── pdf/
+            ├── csv/
+            └── xbrl/
 ```
 
 ## 開発時のワークフロー

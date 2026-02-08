@@ -88,7 +88,7 @@ PDF から財務データを抽出して構造化する。
 ### 例
 
 ```
-/extract-data 5819_canare/data/pdf/yuho_2024.pdf
+/extract-data reports/5819_canare/data/pdf/yuho_2024.pdf
 ```
 
 ### 処理内容
@@ -122,7 +122,7 @@ PDF から財務データを抽出して構造化する。
 ### 例
 
 ```
-/update-report 5819_canare
+/update-report reports/5819_canare
 ```
 
 ### 処理内容
@@ -152,7 +152,7 @@ PDF から財務データを抽出して構造化する。
 ### 例
 
 ```
-/update-price 5819_canare 1250
+/update-price reports/5819_canare 1250
 ```
 
 ### 処理内容
@@ -183,7 +183,7 @@ PDF から財務データを抽出して構造化する。
 ### 例
 
 ```
-/compare 5819_canare 6857_advantest
+/compare reports/5819_canare 6857_advantest
 ```
 
 ### 処理内容
@@ -215,8 +215,8 @@ PDF から財務データを抽出して構造化する。
 ### 2. 既存企業の決算を更新する
 
 ```
-/update-report 5819_canare
-/update-price 5819_canare 1250
+/update-report reports/5819_canare
+/update-price reports/5819_canare 1250
 ```
 
 最新決算を反映後、株価を更新。
@@ -226,7 +226,7 @@ PDF から財務データを抽出して構造化する。
 ```
 /corporate-report 5819 カナレ電気
 /corporate-report 6857 アドバンテスト
-/compare 5819_canare 6857_advantest
+/compare reports/5819_canare 6857_advantest
 ```
 
 各企業のレポートを作成後、横比較。
