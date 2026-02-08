@@ -9,6 +9,7 @@ import argparse
 from corporate_reports.edinet import (
     search_documents,
     download_document,
+    extract_financial_data,
     EdinetAPIError,
 )
 
@@ -30,8 +31,21 @@ def main():
     search_parser.add_argument("--ordinance-code", help="府令コード (例: 010)")
     search_parser.add_argument("--form-code", help="様式コード (例: 030000)")
 
+    # edinet extract
+    extract_parser = edinet_subparsers.add_parser(
+        "extract", help="CSVから財務データを抽出"
+    )
+    extract_parser.add_argument(
+        "--csv-dir", required=True, help="CSVディレクトリのパス"
+    )
+    extract_parser.add_argument(
+        "--output", help="出力先ファイルパス（省略時は標準出力）"
+    )
+
     # edinet download
-    download_parser = edinet_subparsers.add_parser("download", help="書類をダウンロード")
+    download_parser = edinet_subparsers.add_parser(
+        "download", help="書類をダウンロード"
+    )
     download_parser.add_argument("--doc-id", required=True, help="書類管理番号")
     download_parser.add_argument(
         "--type",
@@ -53,6 +67,24 @@ def main():
                     form_code=args.form_code,
                 )
                 print(json.dumps(results, ensure_ascii=False, indent=2))
+
+            elif args.edinet_command == "extract":
+                data = extract_financial_data(csv_dir=args.csv_dir)
+                output_json = json.dumps(data, ensure_ascii=False, indent=2)
+                if args.output:
+                    from pathlib import Path
+
+                    out = Path(args.output)
+                    out.parent.mkdir(parents=True, exist_ok=True)
+                    out.write_text(output_json + "\n", encoding="utf-8")
+                    print(
+                        json.dumps(
+                            {"status": "success", "file": str(out)},
+                            ensure_ascii=False,
+                        )
+                    )
+                else:
+                    print(output_json)
 
             elif args.edinet_command == "download":
                 output_path = download_document(
