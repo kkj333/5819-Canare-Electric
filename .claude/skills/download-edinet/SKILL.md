@@ -1,6 +1,6 @@
 ---
 name: download-edinet
-description: EDINET APIから有価証券報告書・決算短信をダウンロードする（PDF/CSV/XBRL対応）。使い方 /download-edinet [証券コード] [企業名]
+description: EDINET APIから有価証券報告書・四半期報告書をダウンロードする（PDF/CSV/XBRL対応）。使い方 /download-edinet [証券コード] [企業名]
 ---
 
 # EDINET 書類ダウンロード
@@ -26,7 +26,7 @@ description: EDINET APIから有価証券報告書・決算短信をダウンロ
 企業ディレクトリが存在するか確認し、なければ作成:
 
 ```
-{証券コード}_{企業名英語小文字}/
+reports/{証券コード}_{企業名英語小文字}/
 └── data/
     ├── pdf/       # PDF書類
     ├── csv/       # CSV構造化データ
@@ -69,10 +69,8 @@ uv run corporate-reports edinet search \
 |---|---|---|
 | 有価証券報告書 | `010` | `030000` |
 | 四半期報告書 | `010` | `043000` |
-| 決算短信（通期） | — | — |
-| 決算短信（四半期） | — | — |
 
-決算短信は取引所開示のため ordinanceCode/formCode が不定。`secCode` + `docDescription` の文字列マッチで絞り込む。
+**注意**: 決算短信はTDnet（東証の適時開示システム）で配信されるため、EDINET APIでは取得できない。短信PDFは企業IRページ等から手動で取得し `data/pdf/` に配置する。
 
 **証券コードの注意:** EDINET内では5桁（末尾0付き）。4桁コードの場合は先頭4桁で前方一致させる（スクリプトが自動対応）。
 
@@ -80,12 +78,12 @@ uv run corporate-reports edinet search \
 
 提出日が不明な場合、決算月から推定して日付範囲検索する:
 
-| 決算月 | 有報の提出月目安 | 短信の提出月目安 |
-|---|---|---|
-| 3月 | 6月 | 4〜5月 |
-| 12月 | 3月 | 2月 |
-| 9月 | 12月 | 11月 |
-| 6月 | 9月 | 8月 |
+| 決算月 | 有報の提出月目安 |
+|---|---|
+| 3月 | 6月 |
+| 12月 | 3月 |
+| 9月 | 12月 |
+| 6月 | 9月 |
 
 想定月の1日〜末日を順に検索する。見つかった時点で終了。
 
@@ -136,12 +134,11 @@ uv run corporate-reports edinet download \
 
 **実行例:**
 ```bash
-# PDF取得
+# PDF取得（直接PDFが返される）
 uv run corporate-reports edinet download \
   --doc-id S100XXXX \
   --type 2 \
-  --output temp/doc.zip
-unzip temp/doc.zip -d temp/ && mv temp/*.pdf {保存先}
+  --output {保存先}/yuho_2024.pdf
 
 # CSV取得（構造化データ）
 uv run corporate-reports edinet download \
@@ -169,12 +166,11 @@ unzip temp/doc_xbrl.zip -d {保存先}/xbrl/
 ### 6. ファイル保存規約
 
 ```
-{証券コード}_{企業名}/data/
+reports/{証券コード}_{企業名}/data/
 ├── pdf/
 │   ├── yuho_2024.pdf            # 有価証券報告書（2024年12月期）
 │   ├── yuho_2023.pdf
-│   ├── tanshin_2025q4.pdf       # 決算短信（2025年12月期 本決算）
-│   └── tanshin_2025q2.pdf       # 決算短信（第2四半期）
+│   └── tanshin_2025q4.pdf       # 決算短信（手動配置）
 ├── csv/
 │   ├── yuho_2024_csv/           # CSVはフォルダごと保存
 │   └── yuho_2023_csv/
@@ -186,7 +182,7 @@ unzip temp/doc_xbrl.zip -d {保存先}/xbrl/
 
 - **APIキーの安全性**: `corporate-reports` CLI を使用することでAPIキーが会話ログに露出しない
 - **レートリミット**: スクリプトが自動的に秒間3回以内に制御（0.35秒間隔）
-- **ZIP展開**: 全形式がZIPで返される。一時ディレクトリに展開してからリネーム・移動する
+- **ファイル形式**: type=1,5 はZIPで返される（展開が必要）。type=2,3 はPDFが直接返される
 - **保存期間**: 過去5年分の書類が取得可能
 - **CSV対応開始**: 2024年4月以降の提出書類からCSV取得可能。それ以前はPDFのみ
 - **大量取得時**: 日付ループ中にエラーが出たら中断して原因確認（APIキー期限切れ、休日等）

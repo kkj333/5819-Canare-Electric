@@ -31,7 +31,7 @@ jobs:
         run: uv sync
 
       - name: テスト実行（カバレッジ測定）
-        run: uv run pytest tests/ --cov=scripts --cov-report=xml --cov-report=term-missing -v
+        run: uv run pytest tests/ --cov=src/corporate_reports --cov-report=xml --cov-report=term-missing -v
 
 
   lint:
@@ -51,12 +51,12 @@ jobs:
 
       - name: ruff でリント
         run: |
-          uv tool run ruff check scripts/ tests/
+          uv tool run ruff check src/ tests/
 
       - name: ruff でフォーマットチェック
         run: |
-          uv tool run ruff format --check scripts/ tests/
+          uv tool run ruff format --check src/ tests/
 
       - name: ty で型チェック
         run: |
-          uv run ty check scripts/ tests/
+          uv run ty check src/ tests/

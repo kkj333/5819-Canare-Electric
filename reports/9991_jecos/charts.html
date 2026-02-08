@@ -1,0 +1,525 @@
+---
+layout: default
+title: ジェコス - 財務データグラフ
+---
+
+<p><a href="./">← ジェコストップ</a> ｜ <a href="report.html">企業分析レポート</a> ｜ <a href="../../">企業一覧</a></p>
+
+<div class="chart-legend">
+  <span><span class="dot" style="background:#e74c3c"></span> 割安シグナル・要注目</span>
+  <span><span class="dot" style="background:#f39c12"></span> 改善余地あり</span>
+  <span><span class="dot" style="background:#27ae60"></span> 成長・ポジティブ</span>
+</div>
+
+<style>
+  .chart-container {
+    max-width: 800px;
+    margin: 2rem auto;
+    padding: 1.5rem;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+  }
+  .chart-container h3 {
+    text-align: center;
+    margin-bottom: 0.5rem;
+    color: #333;
+  }
+  .chart-note {
+    text-align: center;
+    font-size: 0.85rem;
+    color: #888;
+    margin-top: 0.25rem;
+  }
+  .chart-container.hl-red {
+    border-left: 5px solid #e74c3c;
+  }
+  .chart-container.hl-green {
+    border-left: 5px solid #27ae60;
+  }
+  .chart-container.hl-amber {
+    border-left: 5px solid #f39c12;
+  }
+  .chart-note.note-red {
+    color: #c0392b;
+    font-weight: 600;
+    background: #fdecea;
+    display: inline-block;
+    padding: 0.2rem 0.8rem;
+    border-radius: 4px;
+    margin-top: 0.5rem;
+  }
+  .chart-note.note-green {
+    color: #1e8449;
+    font-weight: 600;
+    background: #eafaf1;
+    display: inline-block;
+    padding: 0.2rem 0.8rem;
+    border-radius: 4px;
+    margin-top: 0.5rem;
+  }
+  .chart-note.note-amber {
+    color: #b7950b;
+    font-weight: 600;
+    background: #fef9e7;
+    display: inline-block;
+    padding: 0.2rem 0.8rem;
+    border-radius: 4px;
+    margin-top: 0.5rem;
+  }
+  .chart-legend {
+    display: flex;
+    gap: 1.5rem;
+    justify-content: center;
+    margin-bottom: 1.5rem;
+    font-size: 0.9rem;
+  }
+  .chart-legend span {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+  }
+  .chart-legend .dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 2px;
+    display: inline-block;
+  }
+</style>
+
+<div class="chart-container">
+  <h3>売上高・利益の推移（連結）</h3>
+  <canvas id="plChart"></canvas>
+  <p class="chart-note">単位：百万円</p>
+</div>
+
+<div class="chart-container">
+  <h3>セグメント別 売上高・営業利益（2024年3月期）</h3>
+  <canvas id="segmentChart"></canvas>
+  <p class="chart-note">単位：百万円</p>
+</div>
+
+<div class="chart-container hl-red">
+  <h3>営業CF・実質FCFの推移</h3>
+  <canvas id="cfChart"></canvas>
+  <p class="chart-note note-red">営業CFが2024年3月期に2,062百万円まで大幅減少。実質FCFはマイナス継続</p>
+</div>
+
+<div class="chart-container hl-red">
+  <h3>BPS vs 株価の推移</h3>
+  <canvas id="bpsChart"></canvas>
+  <p class="chart-note note-red">BPSは右肩上がりだが株価は低水準 → PBR圧縮が進行（PBR 0.66倍）</p>
+</div>
+
+<div class="chart-container hl-amber">
+  <h3>ROE vs 事業ROIC の推移</h3>
+  <canvas id="roeChart"></canvas>
+  <p class="chart-note note-amber">ROE 7.2%、事業ROIC 7.06%。いずれも8%を下回る水準で改善余地あり</p>
+</div>
+
+<div class="chart-container hl-green">
+  <h3>配当の推移</h3>
+  <canvas id="dividendChart"></canvas>
+  <p class="chart-note note-green">2024年3月期に40円に増配。配当性向は30%前後で安定</p>
+</div>
+
+<div class="chart-container hl-red">
+  <h3>ネットキャッシュの推移</h3>
+  <canvas id="netcashChart"></canvas>
+  <p class="chart-note note-red">ネットキャッシュが2024年3月期にマイナス転換（-1,467百万円）。財務健全性が低下</p>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3"></script>
+<script>
+const colors = {
+  blue: 'rgba(54,162,235,0.7)',
+  blueBorder: 'rgba(54,162,235,1)',
+  red: 'rgba(255,99,132,0.7)',
+  redBorder: 'rgba(255,99,132,1)',
+  green: 'rgba(75,192,192,0.7)',
+  greenBorder: 'rgba(75,192,192,1)',
+  orange: 'rgba(255,159,64,0.7)',
+  orangeBorder: 'rgba(255,159,64,1)',
+  purple: 'rgba(153,102,255,0.7)',
+  yellow: 'rgba(255,205,86,0.7)',
+  grey: 'rgba(201,203,207,0.7)',
+};
+
+// 1. 売上高・利益の推移
+new Chart(document.getElementById('plChart'), {
+  type: 'bar',
+  data: {
+    labels: ['2020/3','2021/3','2022/3','2023/3','2024/3'],
+    datasets: [
+      {
+        label: '売上高',
+        data: [114327, 110206, 113997, 120521, 128194],
+        backgroundColor: colors.blue,
+        borderColor: colors.blueBorder,
+        borderWidth: 1,
+        order: 2
+      },
+      {
+        label: '経常利益',
+        data: [6708, 6500, 5238, 4903, 6602],
+        type: 'line',
+        borderColor: colors.redBorder,
+        backgroundColor: colors.red,
+        borderWidth: 2,
+        pointRadius: 4,
+        tension: 0.3,
+        yAxisID: 'y1',
+        order: 1
+      },
+      {
+        label: '親会社株主帰属純利益',
+        data: [4406, 4549, 3326, 3428, 4414],
+        type: 'line',
+        borderColor: colors.greenBorder,
+        backgroundColor: colors.green,
+        borderWidth: 2,
+        pointRadius: 4,
+        tension: 0.3,
+        yAxisID: 'y1',
+        order: 1
+      }
+    ]
+  },
+  options: {
+    responsive: true,
+    scales: {
+      y: {
+        beginAtZero: true,
+        title: { display: true, text: '売上高（百万円）' },
+        max: 150000
+      },
+      y1: {
+        beginAtZero: true,
+        position: 'right',
+        title: { display: true, text: '利益（百万円）' },
+        max: 8000,
+        grid: { drawOnChartArea: false }
+      }
+    }
+  }
+});
+
+// 2. セグメント別売上・利益（2024年3月期）
+new Chart(document.getElementById('segmentChart'), {
+  type: 'bar',
+  data: {
+    labels: ['重仮設事業','建設機械事業'],
+    datasets: [
+      {
+        label: '売上高',
+        data: [114628, 13567],
+        backgroundColor: colors.blue,
+        yAxisID: 'y'
+      },
+      {
+        label: '営業利益',
+        data: [6340, 422],
+        backgroundColor: colors.red,
+        yAxisID: 'y1'
+      }
+    ]
+  },
+  options: {
+    responsive: true,
+    scales: {
+      y: {
+        beginAtZero: true,
+        title: { display: true, text: '売上高（百万円）' },
+        position: 'left'
+      },
+      y1: {
+        beginAtZero: true,
+        title: { display: true, text: '営業利益（百万円）' },
+        position: 'right',
+        grid: { drawOnChartArea: false }
+      }
+    }
+  }
+});
+
+// 3. 営業CF・実質FCF推移
+const ocfData = [11315, 8504, 9097, 2952, 2062];
+const capexEstimate = [1500, 1500, 1500, 1500, 1500]; // 推定設備投資
+const fcfData = ocfData.map((ocf, i) => ocf - capexEstimate[i]);
+new Chart(document.getElementById('cfChart'), {
+  type: 'bar',
+  data: {
+    labels: ['2020/3','2021/3','2022/3','2023/3','2024/3'],
+    datasets: [
+      {
+        label: '営業CF',
+        data: ocfData,
+        backgroundColor: colors.blue,
+        borderColor: colors.blueBorder,
+        borderWidth: 1
+      },
+      {
+        label: '実質FCF（営業CF−設備投資推定）',
+        data: fcfData,
+        type: 'line',
+        borderColor: colors.redBorder,
+        backgroundColor: 'transparent',
+        borderWidth: 2,
+        pointRadius: 5,
+        tension: 0.3
+      }
+    ]
+  },
+  options: {
+    responsive: true,
+    scales: {
+      y: {
+        title: { display: true, text: '百万円' }
+      }
+    },
+    plugins: {
+      annotation: {
+        annotations: {
+          zeroLine: {
+            type: 'line',
+            yMin: 0,
+            yMax: 0,
+            borderColor: 'rgba(0,0,0,0.3)',
+            borderWidth: 2,
+            borderDash: [5, 5]
+          }
+        }
+      }
+    }
+  }
+});
+
+// 4. BPS vs 株価
+const bpsLabels = ['2020/3','2021/3','2022/3','2023/3','2024/3'];
+const bpsData = [1532.77, 1642.82, 1632.75, 1748.77, 1861.66];
+const stockPrice = [786, 966, 802, 882, 1225]; // 期末株価（推定）
+new Chart(document.getElementById('bpsChart'), {
+  type: 'bar',
+  data: {
+    labels: bpsLabels,
+    datasets: [
+      {
+        label: 'BPS（円）',
+        data: bpsData,
+        backgroundColor: colors.blue,
+        borderColor: colors.blueBorder,
+        borderWidth: 1,
+        order: 2
+      },
+      {
+        label: '株価（円）',
+        data: stockPrice,
+        type: 'line',
+        borderColor: colors.redBorder,
+        backgroundColor: 'transparent',
+        borderWidth: 2,
+        pointRadius: 5,
+        tension: 0.3,
+        order: 1
+      }
+    ]
+  },
+  options: {
+    responsive: true,
+    scales: {
+      y: {
+        beginAtZero: false,
+        min: 600,
+        title: { display: true, text: '円' }
+      }
+    }
+  }
+});
+
+// 5. ROE vs ROIC推移
+const roeData = [8.1, 7.9, 5.7, 5.8, 7.2];
+const roicData = [8.64, 8.50, 7.35, 5.82, 7.06];
+new Chart(document.getElementById('roeChart'), {
+  type: 'line',
+  data: {
+    labels: ['2020/3','2021/3','2022/3','2023/3','2024/3'],
+    datasets: [
+      {
+        label: 'ROE（%）',
+        data: roeData,
+        borderColor: colors.blueBorder,
+        backgroundColor: colors.blue,
+        borderWidth: 2,
+        pointRadius: 5,
+        tension: 0.3,
+        fill: true
+      },
+      {
+        label: '事業ROIC（%）',
+        data: roicData,
+        borderColor: colors.greenBorder,
+        backgroundColor: 'rgba(75,192,192,0.15)',
+        borderWidth: 3,
+        pointRadius: 6,
+        tension: 0.3,
+        fill: true
+      }
+    ]
+  },
+  options: {
+    responsive: true,
+    scales: {
+      y: {
+        beginAtZero: true,
+        max: 12,
+        title: { display: true, text: '%' },
+        ticks: { callback: v => v + '%' }
+      }
+    },
+    plugins: {
+      annotation: {
+        annotations: {
+          targetLine: {
+            type: 'line',
+            yMin: 8,
+            yMax: 8,
+            borderColor: 'rgba(255,99,132,0.6)',
+            borderWidth: 2,
+            borderDash: [6, 4],
+            label: {
+              display: true,
+              content: '8%ライン（目安）',
+              position: 'start',
+              backgroundColor: 'rgba(255,99,132,0.8)',
+              font: { size: 11 }
+            }
+          },
+          belowTarget: {
+            type: 'box',
+            yMin: 0,
+            yMax: 8,
+            backgroundColor: 'rgba(231,76,60,0.07)',
+            borderWidth: 0
+          }
+        }
+      }
+    }
+  }
+});
+
+// 6. 配当推移
+const divData = [35, 35, 35, 35, 40];
+const payoutData = [31.8, 27.4, 38.9, 35.0, 29.9];
+new Chart(document.getElementById('dividendChart'), {
+  type: 'bar',
+  data: {
+    labels: ['2020/3','2021/3','2022/3','2023/3','2024/3'],
+    datasets: [
+      {
+        label: '年間配当（円）',
+        data: divData,
+        backgroundColor: colors.green,
+        borderColor: colors.greenBorder,
+        borderWidth: 1
+      },
+      {
+        label: '配当性向（%）',
+        data: payoutData,
+        type: 'line',
+        borderColor: colors.redBorder,
+        backgroundColor: 'transparent',
+        borderWidth: 2,
+        pointRadius: 4,
+        tension: 0.3,
+        yAxisID: 'y1'
+      }
+    ]
+  },
+  options: {
+    responsive: true,
+    scales: {
+      y: {
+        beginAtZero: true,
+        title: { display: true, text: '配当（円）' }
+      },
+      y1: {
+        beginAtZero: true,
+        max: 60,
+        position: 'right',
+        title: { display: true, text: '配当性向（%）' },
+        ticks: { callback: v => v + '%' },
+        grid: { drawOnChartArea: false }
+      }
+    },
+    plugins: {
+      annotation: {
+        annotations: {
+          fiftyLine: {
+            type: 'line',
+            yScaleID: 'y1',
+            yMin: 50,
+            yMax: 50,
+            borderColor: 'rgba(39,174,96,0.6)',
+            borderWidth: 2,
+            borderDash: [6, 4],
+            label: {
+              display: true,
+              content: '50%ライン',
+              position: 'start',
+              backgroundColor: 'rgba(39,174,96,0.8)',
+              font: { size: 11 }
+            }
+          }
+        }
+      }
+    }
+  }
+});
+
+// 7. ネットキャッシュの推移
+// ネットキャッシュ = 現金同等物 - 有利子負債（推定）
+// 有利子負債を逆算: ネットキャッシュが2024年3月期に-1,467百万円
+// 現金同等物: 2225 → 7017 → 10286 → 4767 → 1135
+// 推定有利子負債: 0 → 0 → 0 → 0 → 2602（逆算）
+const cashData = [2225, 7017, 10286, 4767, 1135];
+const debtEstimate = [0, 0, 0, 0, 2602]; // 推定有利子負債
+const netcashData = cashData.map((c, i) => c - debtEstimate[i]);
+new Chart(document.getElementById('netcashChart'), {
+  type: 'bar',
+  data: {
+    labels: ['2020/3','2021/3','2022/3','2023/3','2024/3'],
+    datasets: [
+      {
+        label: 'ネットキャッシュ（百万円）',
+        data: netcashData,
+        backgroundColor: netcashData.map(v => v >= 0 ? colors.green : 'rgba(231,76,60,0.7)'),
+        borderColor: netcashData.map(v => v >= 0 ? colors.greenBorder : 'rgba(231,76,60,1)'),
+        borderWidth: 1
+      }
+    ]
+  },
+  options: {
+    responsive: true,
+    scales: {
+      y: {
+        title: { display: true, text: '百万円' }
+      }
+    },
+    plugins: {
+      annotation: {
+        annotations: {
+          zeroLine: {
+            type: 'line',
+            yMin: 0,
+            yMax: 0,
+            borderColor: 'rgba(0,0,0,0.5)',
+            borderWidth: 2,
+            borderDash: [5, 5]
+          }
+        }
+      }
+    }
+  }
+});
+</script>

@@ -23,7 +23,7 @@ Claude Code で利用可能なスキルの詳細ガイド。
 ### 処理内容
 
 1. 企業ディレクトリ `[証券コード]_[企業名小文字]` を作成
-2. EDINET API から有価証券報告書・決算短信をダウンロード
+2. EDINET API から有価証券報告書・四半期報告書をダウンロード
 3. 財務データを抽出・構造化
 4. レポート（Markdown）を生成
 5. 財務チャート（HTML）を生成
@@ -38,7 +38,7 @@ Claude Code で利用可能なスキルの詳細ガイド。
 
 ## `/download-edinet`
 
-EDINET API から有価証券報告書・決算短信をダウンロードする。
+EDINET API から有価証券報告書・四半期報告書をダウンロードする。
 
 ### 使い方
 
@@ -55,9 +55,10 @@ EDINET API から有価証券報告書・決算短信をダウンロードする
 ### 処理内容
 
 1. 企業の開示書類を EDINET API で検索
-2. 有価証券報告書（PDF・CSV）をダウンロード
-3. 決算短信（PDF）をダウンロード
-4. 企業ディレクトリの `data/` 以下に保存
+2. 有価証券報告書・四半期報告書（PDF・CSV）をダウンロード
+3. 企業ディレクトリの `data/` 以下に保存
+
+**注意**: 決算短信はTDnet管轄のためEDINET APIでは取得不可。企業IRページ等から手動でPDFを取得する。
 
 ### 取得形式
 
@@ -88,7 +89,7 @@ PDF から財務データを抽出して構造化する。
 ### 例
 
 ```
-/extract-data 5819_canare/data/pdf/yuho_2024.pdf
+/extract-data reports/5819_canare/data/pdf/yuho_2024.pdf
 ```
 
 ### 処理内容
@@ -122,12 +123,12 @@ PDF から財務データを抽出して構造化する。
 ### 例
 
 ```
-/update-report 5819_canare
+/update-report reports/5819_canare
 ```
 
 ### 処理内容
 
-1. 最新の有価証券報告書・決算短信をダウンロード
+1. 最新の有価証券報告書をダウンロード
 2. 財務データを抽出
 3. 既存レポートに新決算データを追加
 4. チャートを更新
@@ -152,7 +153,7 @@ PDF から財務データを抽出して構造化する。
 ### 例
 
 ```
-/update-price 5819_canare 1250
+/update-price reports/5819_canare 1250
 ```
 
 ### 処理内容
@@ -183,7 +184,7 @@ PDF から財務データを抽出して構造化する。
 ### 例
 
 ```
-/compare 5819_canare 6857_advantest
+/compare reports/5819_canare 6857_advantest
 ```
 
 ### 処理内容
@@ -215,8 +216,8 @@ PDF から財務データを抽出して構造化する。
 ### 2. 既存企業の決算を更新する
 
 ```
-/update-report 5819_canare
-/update-price 5819_canare 1250
+/update-report reports/5819_canare
+/update-price reports/5819_canare 1250
 ```
 
 最新決算を反映後、株価を更新。
@@ -226,7 +227,7 @@ PDF から財務データを抽出して構造化する。
 ```
 /corporate-report 5819 カナレ電気
 /corporate-report 6857 アドバンテスト
-/compare 5819_canare 6857_advantest
+/compare reports/5819_canare 6857_advantest
 ```
 
 各企業のレポートを作成後、横比較。

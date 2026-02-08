@@ -22,10 +22,8 @@ secrets.*
 token.*
 api_key*
 
-# === 抽出データの一時ファイル ===
-**/data/pdf/
-**/data/csv/
-**/data/xbrl/
+# === 抽出データ（EDINET CSV/PDF/XBRL/JSON等） ===
+**/data/
 temp/
 temp_*/
 tmp/
