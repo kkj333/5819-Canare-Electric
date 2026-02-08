@@ -10,8 +10,8 @@
 
 ## GitHub Pages
 
-- [カナレ電気 - レポート](https://kkj333.github.io/5819-Canare-Electric/5819_canare/report.html)
-- [カナレ電気 - チャート](https://kkj333.github.io/5819-Canare-Electric/5819_canare/charts.html)
+- [カナレ電気 - レポート](https://kkj333.github.io/corporate-reports/5819_canare/report.html)
+- [カナレ電気 - チャート](https://kkj333.github.io/corporate-reports/5819_canare/charts.html)
 
 ## 使い方
 
