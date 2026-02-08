@@ -126,7 +126,7 @@ title: 財務データグラフ
 <div class="chart-container hl-amber">
   <h3>ROE vs 事業ROIC の推移</h3>
   <canvas id="roeChart"></canvas>
-  <p class="chart-note note-amber">ROEは6%台だが事業ROIC（余剰現金除く）は12〜22%。低ROEの原因は過剰な現金保有</p>
+  <p class="chart-note note-amber">ROEは6%台だが事業ROIC（NOPAT基準・余剰現金除く）は12〜22%。低ROEの原因は過剰な現金保有</p>
 </div>
 
 <div class="chart-container hl-green">
@@ -451,7 +451,7 @@ new Chart(document.getElementById('roeChart'), {
       },
       {
         label: '事業ROIC（%）',
-        data: [12.5, 11.5, 12.2, 13.9, 18.1, 22.4],
+        data: [12.2, 12.2, 12.0, 13.7, 16.4, 21.6],
         borderColor: colors.greenBorder,
         backgroundColor: 'rgba(75,192,192,0.15)',
         borderWidth: 3,
