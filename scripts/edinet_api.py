@@ -30,6 +30,7 @@ RATE_LIMIT_DELAY = 0.35  # 秒間3リクエスト = 約0.33秒間隔
 
 class EdinetAPIError(Exception):
     """EDINET API エラー"""
+
     pass
 
 
@@ -44,7 +45,9 @@ def check_api_key():
         print("   EDINET_API_KEY=あなたのAPIキー", file=sys.stderr)
         print("", file=sys.stderr)
         print("APIキーの取得:", file=sys.stderr)
-        print("https://api.edinet-fsa.go.jp/api/auth/index.aspx?mode=1", file=sys.stderr)
+        print(
+            "https://api.edinet-fsa.go.jp/api/auth/index.aspx?mode=1", file=sys.stderr
+        )
         sys.exit(1)
 
 
@@ -165,8 +168,12 @@ def main():
     # download コマンド
     download_parser = subparsers.add_parser("download", help="書類をダウンロード")
     download_parser.add_argument("--doc-id", required=True, help="書類管理番号")
-    download_parser.add_argument("--type", required=True, choices=["1", "2", "3", "5"],
-                                 help="取得形式 (1:XBRL, 2:PDF, 3:代替PDF, 5:CSV)")
+    download_parser.add_argument(
+        "--type",
+        required=True,
+        choices=["1", "2", "3", "5"],
+        help="取得形式 (1:XBRL, 2:PDF, 3:代替PDF, 5:CSV)",
+    )
     download_parser.add_argument("--output", required=True, help="保存先パス")
 
     args = parser.parse_args()
@@ -187,14 +194,21 @@ def main():
                 doc_type=args.type,
                 output_path=args.output,
             )
-            print(json.dumps({"status": "success", "file": output_path}, ensure_ascii=False))
+            print(
+                json.dumps(
+                    {"status": "success", "file": output_path}, ensure_ascii=False
+                )
+            )
 
         else:
             parser.print_help()
             sys.exit(1)
 
     except EdinetAPIError as e:
-        print(json.dumps({"status": "error", "message": str(e)}, ensure_ascii=False), file=sys.stderr)
+        print(
+            json.dumps({"status": "error", "message": str(e)}, ensure_ascii=False),
+            file=sys.stderr,
+        )
         sys.exit(1)
 
 

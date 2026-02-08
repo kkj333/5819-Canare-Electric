@@ -3,8 +3,6 @@ EDINET API クライアントのユニットテスト
 """
 
 import os
-import json
-from pathlib import Path
 from unittest.mock import Mock, patch, mock_open
 import pytest
 
