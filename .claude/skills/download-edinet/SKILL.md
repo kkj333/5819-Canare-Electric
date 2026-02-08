@@ -1,6 +1,6 @@
 ---
 name: download-edinet
-description: EDINET APIから有価証券報告書・四半期報告書をダウンロードする（PDF/CSV/XBRL対応）。使い方 /download-edinet [証券コード] [企業名]
+description: EDINET APIから有価証券報告書・半期報告書・四半期報告書をダウンロードする（PDF/CSV/XBRL対応）。使い方 /download-edinet [証券コード] [企業名]
 ---
 
 # EDINET 書類ダウンロード
@@ -68,6 +68,7 @@ uv run corporate-reports edinet search \
 | 書類 | ordinanceCode | formCode |
 |---|---|---|
 | 有価証券報告書 | `010` | `030000` |
+| **半期報告書** | `010` | **`043A00`** |
 | 四半期報告書 | `010` | `043000` |
 
 **注意**: 決算短信はTDnet（東証の適時開示システム）で配信されるため、EDINET APIでは取得できない。短信PDFは企業IRページ等から手動で取得し `data/pdf/` に配置する。
