@@ -134,12 +134,11 @@ uv run corporate-reports edinet download \
 
 **実行例:**
 ```bash
-# PDF取得
+# PDF取得（直接PDFが返される）
 uv run corporate-reports edinet download \
   --doc-id S100XXXX \
   --type 2 \
-  --output temp/doc.zip
-unzip temp/doc.zip -d temp/ && mv temp/*.pdf {保存先}
+  --output {保存先}/yuho_2024.pdf
 
 # CSV取得（構造化データ）
 uv run corporate-reports edinet download \
@@ -183,7 +182,7 @@ reports/{証券コード}_{企業名}/data/
 
 - **APIキーの安全性**: `corporate-reports` CLI を使用することでAPIキーが会話ログに露出しない
 - **レートリミット**: スクリプトが自動的に秒間3回以内に制御（0.35秒間隔）
-- **ZIP展開**: 全形式がZIPで返される。一時ディレクトリに展開してからリネーム・移動する
+- **ファイル形式**: type=1,5 はZIPで返される（展開が必要）。type=2,3 はPDFが直接返される
 - **保存期間**: 過去5年分の書類が取得可能
 - **CSV対応開始**: 2024年4月以降の提出書類からCSV取得可能。それ以前はPDFのみ
 - **大量取得時**: 日付ループ中にエラーが出たら中断して原因確認（APIキー期限切れ、休日等）
