@@ -49,6 +49,36 @@ title: 財務データグラフ
   <canvas id="quarterlyChart"></canvas>
 </div>
 
+<div class="chart-container">
+  <h3>BPS vs 株価の推移</h3>
+  <canvas id="bpsChart"></canvas>
+  <p class="chart-note">BPSは右肩上がりだが株価は横ばい → PBR圧縮が進行</p>
+</div>
+
+<div class="chart-container">
+  <h3>ネットキャッシュ vs 時価総額</h3>
+  <canvas id="netcashChart"></canvas>
+  <p class="chart-note">ネットキャッシュが時価総額を超過 → EV＜0（事業価値をマイナス評価）</p>
+</div>
+
+<div class="chart-container">
+  <h3>キャッシュフローの推移</h3>
+  <canvas id="cfChart"></canvas>
+  <p class="chart-note">単位：百万円（投資CF 2025/12は有価証券・長期預金の資金運用含む）</p>
+</div>
+
+<div class="chart-container">
+  <h3>ROEの推移</h3>
+  <canvas id="roeChart"></canvas>
+  <p class="chart-note">過剰な現金保有によりROEが低水準に抑えられている</p>
+</div>
+
+<div class="chart-container">
+  <h3>配当の推移</h3>
+  <canvas id="dividendChart"></canvas>
+  <p class="chart-note">単位：円</p>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
 <script>
 const colors = {
@@ -191,7 +221,7 @@ new Chart(document.getElementById('segmentChart'), {
   }
 });
 
-// 4. 四半期営業利益率推移
+// 4. 四半期営業利益率
 new Chart(document.getElementById('quarterlyChart'), {
   type: 'line',
   data: {
@@ -226,6 +256,199 @@ new Chart(document.getElementById('quarterlyChart'), {
         callbacks: {
           label: ctx => ctx.parsed.y + '%'
         }
+      }
+    }
+  }
+});
+
+// 5. BPS vs 株価
+const bpsLabels = ['2020/12','2021/12','2022/12','2023/12','2024/12','2025/12'];
+const bpsData = [2062, 2180, 2325, 2503, 2636, 2784];
+const stockAvg = [1557, 1777, 1543, 1418, 1538, 1864];
+new Chart(document.getElementById('bpsChart'), {
+  type: 'bar',
+  data: {
+    labels: bpsLabels,
+    datasets: [
+      {
+        label: 'BPS（円）',
+        data: bpsData,
+        backgroundColor: colors.blue,
+        borderColor: colors.blueBorder,
+        borderWidth: 1,
+        order: 2
+      },
+      {
+        label: '株価（円）',
+        data: stockAvg,
+        type: 'line',
+        borderColor: colors.redBorder,
+        backgroundColor: 'transparent',
+        borderWidth: 2,
+        pointRadius: 5,
+        tension: 0.3,
+        order: 1
+      }
+    ]
+  },
+  options: {
+    responsive: true,
+    scales: {
+      y: {
+        beginAtZero: false,
+        min: 1000,
+        title: { display: true, text: '円' }
+      }
+    }
+  }
+});
+
+// 6. ネットキャッシュ vs 時価総額
+new Chart(document.getElementById('netcashChart'), {
+  type: 'bar',
+  data: {
+    labels: ['2022/12','2023/12','2024/12','2025/12'],
+    datasets: [
+      {
+        label: 'ネットキャッシュ（億円）',
+        data: [86, 85, 99, 137],
+        backgroundColor: colors.green,
+        borderColor: colors.greenBorder,
+        borderWidth: 1
+      },
+      {
+        label: '時価総額（億円）',
+        data: [97, 105, 99, 131],
+        backgroundColor: colors.orange,
+        borderColor: 'rgba(255,159,64,1)',
+        borderWidth: 1
+      }
+    ]
+  },
+  options: {
+    responsive: true,
+    scales: {
+      y: {
+        beginAtZero: true,
+        title: { display: true, text: '億円' }
+      }
+    }
+  }
+});
+
+// 7. キャッシュフロー推移（10期）
+new Chart(document.getElementById('cfChart'), {
+  type: 'bar',
+  data: {
+    labels: ['2016','2017','2018','2019','2020','2021','2022','2023','2024','2025'],
+    datasets: [
+      {
+        label: '営業CF',
+        data: [1269, 1082, 743, 829, 1271, 516, 836, 809, 1455, 1761],
+        backgroundColor: colors.blue
+      },
+      {
+        label: '投資CF',
+        data: [121, -46, -117, -82, -198, -120, -914, -561, 317, -3610],
+        backgroundColor: colors.red
+      },
+      {
+        label: '財務CF',
+        data: [-297, -324, -324, -365, -284, -214, -290, -369, -544, -464],
+        backgroundColor: colors.grey
+      }
+    ]
+  },
+  options: {
+    responsive: true,
+    scales: {
+      y: {
+        title: { display: true, text: '百万円' }
+      }
+    }
+  }
+});
+
+// 8. ROE推移
+new Chart(document.getElementById('roeChart'), {
+  type: 'line',
+  data: {
+    labels: ['2020/12','2021/12','2022/12','2023/12','2024/12','2025/12'],
+    datasets: [
+      {
+        label: 'ROE（%）',
+        data: [4.95, 4.76, 5.71, 7.27, 5.94, 6.5],
+        borderColor: colors.blueBorder,
+        backgroundColor: colors.blue,
+        borderWidth: 2,
+        pointRadius: 5,
+        tension: 0.3,
+        fill: true
+      },
+      {
+        label: '8%ライン（目安）',
+        data: [8, 8, 8, 8, 8, 8],
+        borderColor: 'rgba(255,99,132,0.5)',
+        borderDash: [5, 5],
+        borderWidth: 2,
+        pointRadius: 0,
+        fill: false
+      }
+    ]
+  },
+  options: {
+    responsive: true,
+    scales: {
+      y: {
+        beginAtZero: true,
+        max: 12,
+        title: { display: true, text: 'ROE（%）' },
+        ticks: { callback: v => v + '%' }
+      }
+    }
+  }
+});
+
+// 9. 配当推移
+new Chart(document.getElementById('dividendChart'), {
+  type: 'bar',
+  data: {
+    labels: ['2020/12','2021/12','2022/12','2023/12','2024/12','2025/12','2026/12(予)'],
+    datasets: [
+      {
+        label: '年間配当（円）',
+        data: [28, 30, 35, 62, 57, 66, 66],
+        backgroundColor: colors.green,
+        borderColor: colors.greenBorder,
+        borderWidth: 1
+      },
+      {
+        label: '配当性向（%）',
+        data: [49.2, 57.5, 30.8, 48.1, 37.3, 37.6, 38.2],
+        type: 'line',
+        borderColor: colors.redBorder,
+        backgroundColor: 'transparent',
+        borderWidth: 2,
+        pointRadius: 4,
+        tension: 0.3,
+        yAxisID: 'y1'
+      }
+    ]
+  },
+  options: {
+    responsive: true,
+    scales: {
+      y: {
+        beginAtZero: true,
+        title: { display: true, text: '配当（円）' }
+      },
+      y1: {
+        beginAtZero: true,
+        max: 80,
+        position: 'right',
+        title: { display: true, text: '配当性向（%）' },
+        ticks: { callback: v => v + '%' },
+        grid: { drawOnChartArea: false }
       }
     }
   }
