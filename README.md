@@ -10,11 +10,14 @@
 | コード | 企業名 | 市場 | レポート | チャート |
 |---|---|---|---|---|
 | 5819 | カナレ電気 | 東証スタンダード | [レポート](reports/5819_canare/report.md) | [チャート](reports/5819_canare/charts.html) |
+| 9991 | ジェコス | 東証プライム | [レポート](reports/9991_jecos/report.md) | [チャート](reports/9991_jecos/charts.html) |
 
 ## GitHub Pages
 
 - [カナレ電気 - レポート](https://kkj333.github.io/corporate-reports/reports/5819_canare/report.html)
 - [カナレ電気 - チャート](https://kkj333.github.io/corporate-reports/reports/5819_canare/charts.html)
+- [ジェコス - レポート](https://kkj333.github.io/corporate-reports/reports/9991_jecos/report.html)
+- [ジェコス - チャート](https://kkj333.github.io/corporate-reports/reports/9991_jecos/charts.html)
 
 ## ドキュメント
 
