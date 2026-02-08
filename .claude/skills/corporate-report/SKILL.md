@@ -17,7 +17,7 @@ description: 上場企業の分析レポートとチャートを生成する。�
 
 | ファイル | 内容 |
 |---|---|
-| `README.md` | 企業トップページ。`[← 企業一覧](../)` リンク付き |
+| `README.md` | 企業トップページ。企業一覧への戻りリンク付き |
 | `report.md` | 分析レポート本体 |
 | `charts.html` | Chart.js グラフページ。Jekyll front matter `layout: default` 付き |
 
@@ -49,10 +49,11 @@ description: 上場企業の分析レポートとチャートを生成する。�
 
 ## 3. レポート構成（report.md）
 
-先頭にナビリンクとCSSを置く:
+先頭にナビリンクとCSSを置く（実例: `5819_canare/report.md` を参照）:
 
-```markdown
-[← {企業名}トップ](./) ｜ [財務データグラフ](charts.html) ｜ [企業一覧](../)
+ナビリンク形式: `[← 企業名トップ](./), [財務データグラフ](charts.html), [企業一覧](../)` の3つを横並び
+
+```html
 
 <style>
 .hl-red { background: #fdecea; color: #c0392b; font-weight: 600; padding: 0.1em 0.4em; border-radius: 3px; }
