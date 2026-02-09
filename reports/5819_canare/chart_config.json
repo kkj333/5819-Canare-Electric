@@ -1,0 +1,366 @@
+{
+  "version": "1.0",
+  "company_name": "カナレ電気",
+  "company_code": "5819",
+  "generated_at": "2026-02-09T15:00:00+09:00",
+  "charts": [
+    {
+      "id": "chart-product-mix",
+      "section_heading": "製品構成（2025/12期）",
+      "position": "after_table",
+      "title": "製品カテゴリ別 売上構成（2025/12期）",
+      "note": "電子機器が+37.9%と急成長。ケーブル依存から多角化が進行",
+      "height": 380,
+      "echarts_option": {
+        "tooltip": {
+          "trigger": "axis",
+          "axisPointer": { "type": "shadow" },
+          "formatter": "{b}<br/>売上高: {c0} 百万円"
+        },
+        "grid": { "left": 100, "right": 40, "top": 20, "bottom": 30 },
+        "xAxis": { "type": "value", "name": "百万円" },
+        "yAxis": {
+          "type": "category",
+          "data": ["商品その他", "機器（電子）", "コネクタ", "機器（パッシブ）", "ハーネス", "ケーブル"],
+          "inverse": false
+        },
+        "series": [
+          {
+            "type": "bar",
+            "data": [
+              { "value": 529, "itemStyle": { "color": "#73c0de" } },
+              { "value": 921, "itemStyle": { "color": "#ee6666" } },
+              { "value": 1742, "itemStyle": { "color": "#fac858" } },
+              { "value": 2150, "itemStyle": { "color": "#91cc75" } },
+              { "value": 3236, "itemStyle": { "color": "#5470c6" } },
+              { "value": 4535, "itemStyle": { "color": "#3ba272" } }
+            ],
+            "barWidth": "50%",
+            "label": { "show": true, "position": "right", "formatter": "{c}百万円" }
+          }
+        ]
+      }
+    },
+    {
+      "id": "chart-pl-trend",
+      "section_heading": "連結経営指標等の推移（有価証券報告書・連結ベース5期）",
+      "position": "after_table",
+      "title": "売上高・経常利益・ROEの推移",
+      "note": "売上5年CAGR+6.2%、純利益CAGR+12.1%。ROEは余剰現金が圧迫",
+      "height": 420,
+      "echarts_option": {
+        "tooltip": {
+          "trigger": "axis",
+          "formatter": "{b}<br/>{a0}: {c0} 百万円<br/>{a1}: {c1} 百万円<br/>{a2}: {c2}%"
+        },
+        "legend": { "data": ["売上高", "経常利益", "ROE"], "bottom": 0 },
+        "grid": { "left": 80, "right": 60, "bottom": 40 },
+        "xAxis": {
+          "type": "category",
+          "data": ["2020/12", "2021/12", "2022/12", "2023/12", "2024/12"]
+        },
+        "yAxis": [
+          { "type": "value", "name": "百万円", "position": "left" },
+          { "type": "value", "name": "ROE（%）", "position": "right", "min": 0, "max": 10 }
+        ],
+        "series": [
+          {
+            "name": "売上高",
+            "type": "bar",
+            "data": [9698, 10034, 11168, 12872, 12383],
+            "itemStyle": { "color": "#5470c6" },
+            "barWidth": "30%"
+          },
+          {
+            "name": "経常利益",
+            "type": "bar",
+            "data": [985, 1070, 1261, 1739, 1448],
+            "itemStyle": { "color": "#91cc75" },
+            "barWidth": "30%"
+          },
+          {
+            "name": "ROE",
+            "type": "line",
+            "yAxisIndex": 1,
+            "data": [4.95, 4.76, 5.71, 7.27, 5.94],
+            "itemStyle": { "color": "#ee6666" },
+            "symbol": "circle",
+            "symbolSize": 8,
+            "lineStyle": { "width": 3 },
+            "markLine": {
+              "silent": true,
+              "symbol": "none",
+              "lineStyle": { "color": "#999", "type": "dashed" },
+              "data": [{ "yAxis": 8, "label": { "formatter": "ROE 8%目標" } }]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "chart-roic",
+      "section_heading": "ROE vs 事業ROIC（資本効率の真実）",
+      "position": "after_table",
+      "title": "ROE vs 事業ROIC — 余剰現金が資本効率を圧迫",
+      "note": "事業ROIC 21.6%に対しROE 6.5%。ネットキャッシュが純資産の72%",
+      "height": 380,
+      "echarts_option": {
+        "tooltip": {
+          "trigger": "axis",
+          "formatter": "{b}<br/>{a0}: {c0}%<br/>{a1}: {c1}%"
+        },
+        "legend": { "data": ["ROE", "事業ROIC"], "bottom": 0 },
+        "grid": { "left": 60, "right": 40, "bottom": 40 },
+        "xAxis": {
+          "type": "category",
+          "data": ["2020/12", "2021/12", "2022/12", "2023/12", "2024/12", "2025/12"]
+        },
+        "yAxis": { "type": "value", "name": "%", "min": 0, "max": 25 },
+        "series": [
+          {
+            "name": "ROE",
+            "type": "line",
+            "data": [4.95, 4.76, 5.71, 7.27, 5.94, 6.50],
+            "itemStyle": { "color": "#5470c6" },
+            "symbol": "circle",
+            "symbolSize": 8,
+            "lineStyle": { "width": 3 },
+            "areaStyle": { "opacity": 0.1 }
+          },
+          {
+            "name": "事業ROIC",
+            "type": "line",
+            "data": [12.2, 12.2, 12.0, 13.7, 16.4, 21.6],
+            "itemStyle": { "color": "#ee6666" },
+            "symbol": "circle",
+            "symbolSize": 8,
+            "lineStyle": { "width": 3 },
+            "areaStyle": { "opacity": 0.1 }
+          }
+        ]
+      }
+    },
+    {
+      "id": "chart-quarterly",
+      "section_heading": "四半期推移（QonQ）",
+      "position": "after_table",
+      "title": "四半期 売上高・営業利益率の推移",
+      "note": "2025/4Qの営業利益率6.9%は突出して低い。2Q偏重の季節性あり",
+      "height": 400,
+      "echarts_option": {
+        "tooltip": {
+          "trigger": "axis",
+          "formatter": "{b}<br/>{a0}: {c0} 億円<br/>{a1}: {c1}%"
+        },
+        "legend": { "data": ["売上高", "営業利益率"], "bottom": 0 },
+        "grid": { "left": 60, "right": 50, "bottom": 40 },
+        "xAxis": {
+          "type": "category",
+          "data": ["23/1Q", "2Q", "3Q", "4Q", "24/1Q", "2Q", "3Q", "4Q", "25/1Q", "2Q", "3Q", "4Q"],
+          "axisLabel": { "rotate": 30 }
+        },
+        "yAxis": [
+          { "type": "value", "name": "売上（億円）", "position": "left", "min": 20 },
+          { "type": "value", "name": "利益率（%）", "position": "right", "min": 0, "max": 20 }
+        ],
+        "series": [
+          {
+            "name": "売上高",
+            "type": "bar",
+            "data": [31.1, 27.8, 31.6, 38.3, 31.7, 28.6, 29.3, 34.3, 33.4, 31.1, 33.5, 33.1],
+            "itemStyle": { "color": "#5470c6" },
+            "barWidth": "50%"
+          },
+          {
+            "name": "営業利益率",
+            "type": "line",
+            "yAxisIndex": 1,
+            "data": [15.4, 6.7, 14.5, 14.3, 12.4, 8.7, 13.4, 10.4, 15.2, 12.4, 13.7, 6.9],
+            "itemStyle": { "color": "#ee6666" },
+            "symbol": "circle",
+            "symbolSize": 6,
+            "lineStyle": { "width": 2 }
+          }
+        ]
+      }
+    },
+    {
+      "id": "chart-segment",
+      "section_heading": "セグメント別業績",
+      "position": "after_table",
+      "title": "地域別セグメント 売上高比較（2024 vs 2025）",
+      "note": "日本セグメント利益+71.1%。米国は関税影響で利益△85.8%",
+      "height": 400,
+      "echarts_option": {
+        "tooltip": {
+          "trigger": "axis",
+          "axisPointer": { "type": "shadow" }
+        },
+        "legend": { "data": ["2024/12 売上", "2025/12 売上"], "bottom": 0 },
+        "grid": { "left": 100, "right": 30, "bottom": 40 },
+        "xAxis": { "type": "value", "name": "百万円" },
+        "yAxis": {
+          "type": "category",
+          "data": ["その他", "シンガポール", "台湾", "中国", "韓国", "米国", "日本"],
+          "inverse": false
+        },
+        "series": [
+          {
+            "name": "2024/12 売上",
+            "type": "bar",
+            "data": [1474, 609, 146, 1308, 1054, 1569, 6220],
+            "itemStyle": { "color": "#5470c6" },
+            "barWidth": "35%"
+          },
+          {
+            "name": "2025/12 売上",
+            "type": "bar",
+            "data": [1763, 573, 115, 1462, 1059, 1664, 6475],
+            "itemStyle": { "color": "#91cc75" },
+            "barWidth": "35%"
+          }
+        ]
+      }
+    },
+    {
+      "id": "chart-cf",
+      "section_heading": "連結キャッシュフロー計算書（百万円）— 10年推移",
+      "position": "after_table",
+      "title": "営業CF・FCF・営業CFマージンの推移（10年）",
+      "note": "営業CFは10年で安定的にプラス。実質FCF（営業CF−設備投資）は16.7億円と過去最高",
+      "height": 420,
+      "echarts_option": {
+        "tooltip": {
+          "trigger": "axis",
+          "formatter": "{b}<br/>{a0}: {c0} 百万円<br/>{a1}: {c1} 百万円<br/>{a2}: {c2}%"
+        },
+        "legend": { "data": ["営業CF", "FCF", "営業CFマージン"], "bottom": 0 },
+        "grid": { "left": 70, "right": 60, "bottom": 40 },
+        "xAxis": {
+          "type": "category",
+          "data": ["16/12", "17/12", "18/12", "19/12", "20/12", "21/12", "22/12", "23/12", "24/12", "25/12"],
+          "axisLabel": { "rotate": 30 }
+        },
+        "yAxis": [
+          { "type": "value", "name": "百万円", "position": "left" },
+          { "type": "value", "name": "CFマージン（%）", "position": "right", "min": 0, "max": 18 }
+        ],
+        "series": [
+          {
+            "name": "営業CF",
+            "type": "bar",
+            "data": [1269, 1082, 743, 829, 1271, 516, 836, 809, 1455, 1761],
+            "itemStyle": { "color": "#5470c6" },
+            "barWidth": "30%"
+          },
+          {
+            "name": "FCF",
+            "type": "bar",
+            "data": [1390, 1036, 626, 747, 1073, 396, -78, 248, 1773, -1849],
+            "itemStyle": { "color": "#91cc75" },
+            "barWidth": "30%"
+          },
+          {
+            "name": "営業CFマージン",
+            "type": "line",
+            "yAxisIndex": 1,
+            "data": [11.9, 10.4, 6.5, 7.3, 13.1, 5.1, 7.5, 6.3, 11.8, 13.4],
+            "itemStyle": { "color": "#ee6666" },
+            "symbol": "circle",
+            "symbolSize": 6,
+            "lineStyle": { "width": 2 }
+          }
+        ]
+      }
+    },
+    {
+      "id": "chart-dcf",
+      "section_heading": "DCFシナリオ比較",
+      "position": "after_table",
+      "title": "DCFシナリオ別 1株価値 vs 現在株価",
+      "note": "弱気ケースでも株価の2.4倍。市場は事業価値をゼロ以下で評価",
+      "height": 300,
+      "echarts_option": {
+        "tooltip": {
+          "trigger": "axis",
+          "axisPointer": { "type": "shadow" },
+          "formatter": "{b}<br/>1株価値: {c0} 円"
+        },
+        "grid": { "left": 150, "right": 60, "top": 20, "bottom": 30 },
+        "xAxis": { "type": "value", "name": "円", "max": 8000 },
+        "yAxis": {
+          "type": "category",
+          "data": ["弱気（0%）", "ミドル（10%）", "強気（20%）"],
+          "inverse": true
+        },
+        "series": [
+          {
+            "type": "bar",
+            "data": [
+              { "value": 4437, "itemStyle": { "color": "#73c0de" } },
+              { "value": 5654, "itemStyle": { "color": "#91cc75" } },
+              { "value": 7357, "itemStyle": { "color": "#5470c6" } }
+            ],
+            "barWidth": "50%",
+            "label": { "show": true, "position": "right", "formatter": "{c}円" },
+            "markLine": {
+              "silent": true,
+              "symbol": "none",
+              "lineStyle": { "color": "#ee6666", "type": "dashed", "width": 2 },
+              "data": [{ "xAxis": 1864, "label": { "formatter": "株価 1,864円", "position": "start" } }]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "chart-dividend",
+      "section_heading": "配当推移",
+      "position": "after_table",
+      "title": "配当額・配当性向の推移",
+      "note": "配当性向40%目標。2026/12期は66円据え置き予想",
+      "height": 380,
+      "echarts_option": {
+        "tooltip": {
+          "trigger": "axis",
+          "formatter": "{b}<br/>{a0}: {c0} 円<br/>{a1}: {c1}%"
+        },
+        "legend": { "data": ["年間配当", "配当性向"], "bottom": 0 },
+        "grid": { "left": 60, "right": 60, "bottom": 40 },
+        "xAxis": {
+          "type": "category",
+          "data": ["2020/12", "2021/12", "2022/12", "2023/12", "2024/12", "2025/12", "2026/12(予)"]
+        },
+        "yAxis": [
+          { "type": "value", "name": "配当（円）", "position": "left", "min": 0 },
+          { "type": "value", "name": "配当性向（%）", "position": "right", "min": 0, "max": 70 }
+        ],
+        "series": [
+          {
+            "name": "年間配当",
+            "type": "bar",
+            "data": [28, 30, 35, 62, 57, 66, 66],
+            "itemStyle": { "color": "#5470c6" },
+            "barWidth": "40%"
+          },
+          {
+            "name": "配当性向",
+            "type": "line",
+            "yAxisIndex": 1,
+            "data": [49.2, 57.5, 30.8, 48.1, 37.3, 37.6, 38.2],
+            "itemStyle": { "color": "#ee6666" },
+            "symbol": "circle",
+            "symbolSize": 8,
+            "lineStyle": { "width": 2 },
+            "markLine": {
+              "silent": true,
+              "symbol": "none",
+              "lineStyle": { "color": "#91cc75", "type": "dashed" },
+              "data": [{ "yAxis": 40, "label": { "formatter": "目標40%" } }]
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

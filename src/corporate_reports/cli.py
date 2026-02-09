@@ -55,10 +55,37 @@ def main():
     )
     download_parser.add_argument("--output", required=True, help="保存先パス")
 
+    # build-report コマンド
+    build_parser = subparsers.add_parser(
+        "build-report", help="report.md から report.html を生成"
+    )
+    build_parser.add_argument("report_dir", help="レポートディレクトリのパス")
+    build_parser.add_argument(
+        "--no-charts",
+        action="store_true",
+        help="チャートなしでHTML生成（chart_config.jsonを無視）",
+    )
+
     args = parser.parse_args()
 
     try:
-        if args.command == "edinet":
+        if args.command == "build-report":
+            from pathlib import Path
+
+            from corporate_reports.build_report import build_report
+
+            output = build_report(
+                report_dir=Path(args.report_dir),
+                no_charts=args.no_charts,
+            )
+            print(
+                json.dumps(
+                    {"status": "success", "file": str(output)},
+                    ensure_ascii=False,
+                )
+            )
+
+        elif args.command == "edinet":
             if args.edinet_command == "search":
                 results = search_documents(
                     date=args.date,
@@ -108,6 +135,12 @@ def main():
             sys.exit(1)
 
     except EdinetAPIError as e:
+        print(
+            json.dumps({"status": "error", "message": str(e)}, ensure_ascii=False),
+            file=sys.stderr,
+        )
+        sys.exit(1)
+    except FileNotFoundError as e:
         print(
             json.dumps({"status": "error", "message": str(e)}, ensure_ascii=False),
             file=sys.stderr,

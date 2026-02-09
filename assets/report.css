@@ -1,0 +1,90 @@
+:root {
+  --bg: #ffffff;
+  --fg: #1a1a2e;
+  --accent: #2563eb;
+  --border: #e2e8f0;
+  --table-header: #f8fafc;
+  --highlight-red: #fef2f2;
+  --highlight-green: #f0fdf4;
+  --highlight-amber: #fffbeb;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: "Hiragino Kaku Gothic ProN", "Noto Sans JP", "Helvetica Neue", sans-serif;
+  color: var(--fg);
+  background: var(--bg);
+  line-height: 1.8;
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+}
+h1 { font-size: 1.6rem; border-bottom: 3px solid var(--accent); padding-bottom: 0.5rem; margin: 2rem 0 1rem; }
+h2 { font-size: 1.35rem; border-bottom: 2px solid var(--border); padding-bottom: 0.4rem; margin: 2.5rem 0 1rem; }
+h3 { font-size: 1.15rem; margin: 1.8rem 0 0.8rem; }
+h4 { font-size: 1.05rem; margin: 1.4rem 0 0.6rem; }
+p { margin: 0.6rem 0; }
+hr { border: none; border-top: 1px solid var(--border); margin: 2rem 0; }
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+blockquote {
+  border-left: 4px solid var(--accent);
+  padding: 0.5rem 1rem;
+  margin: 1rem 0;
+  background: #f8fafc;
+  color: #334155;
+}
+blockquote p { margin: 0.3rem 0; }
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1rem 0;
+  font-size: 0.92rem;
+}
+th, td {
+  border: 1px solid var(--border);
+  padding: 0.5rem 0.75rem;
+  text-align: left;
+}
+th {
+  background: var(--table-header);
+  font-weight: 600;
+  white-space: nowrap;
+}
+td { vertical-align: top; }
+tr:nth-child(even) { background: #fafbfc; }
+.hl-red { background: var(--highlight-red) !important; }
+.hl-green { background: var(--highlight-green) !important; }
+.hl-amber { background: var(--highlight-amber) !important; }
+.chart-container {
+  width: 100%;
+  margin: 1.5rem 0;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 1rem;
+}
+.chart-container .chart-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  margin-bottom: 0.3rem;
+}
+.chart-container .chart-note {
+  font-size: 0.82rem;
+  color: #64748b;
+  margin-bottom: 0.5rem;
+}
+.chart-box {
+  width: 100%;
+}
+/* 印刷用 */
+@media print {
+  body { max-width: 100%; padding: 1rem; }
+  .chart-container { break-inside: avoid; }
+  table { font-size: 0.8rem; }
+}
+/* レスポンシブ */
+@media (max-width: 768px) {
+  body { padding: 1rem 0.75rem; }
+  table { font-size: 0.8rem; }
+  th, td { padding: 0.35rem 0.5rem; }
+}

@@ -7,17 +7,28 @@
 
 ## 企業一覧
 
-| コード | 企業名 | 市場 | レポート | チャート |
+| コード | 企業名 | 市場 | レポート (MD) | レポート (HTML) |
 |---|---|---|---|---|
-| 5819 | カナレ電気 | 東証スタンダード | [レポート](reports/5819_canare/report.md) | [チャート](reports/5819_canare/charts.html) |
-| 9991 | ジェコス | 東証プライム | [レポート](reports/9991_jecos/report.md) | [チャート](reports/9991_jecos/charts.html) |
+| 5819 | カナレ電気 | 東証スタンダード | [Markdown](reports/5819_canare/report.md) | [HTML](reports/5819_canare/report.html) |
+| 9991 | ジェコス | 東証プライム | [Markdown](reports/9991_jecos/report.md) | [HTML](reports/9991_jecos/report.html) |
 
 ## GitHub Pages
 
-- [カナレ電気 - レポート](https://kkj333.github.io/corporate-reports/reports/5819_canare/report.html)
-- [カナレ電気 - チャート](https://kkj333.github.io/corporate-reports/reports/5819_canare/charts.html)
-- [ジェコス - レポート](https://kkj333.github.io/corporate-reports/reports/9991_jecos/report.html)
-- [ジェコス - チャート](https://kkj333.github.io/corporate-reports/reports/9991_jecos/charts.html)
+- [カナレ電気](https://kkj333.github.io/corporate-reports/reports/5819_canare/report.html)
+- [ジェコス](https://kkj333.github.io/corporate-reports/reports/9991_jecos/report.html)
+
+HTMLレポートは `report.md` から自動生成されるスタンドアロンHTML（EChartsチャート付き）です。
+
+```bash
+# チャート付きHTML生成（Claude Codeスキル）
+/build-report reports/9991_jecos
+
+# CLIから直接生成
+uv run corporate-reports build-report reports/9991_jecos
+
+# チャートなし（テキストのみ）
+uv run corporate-reports build-report reports/9991_jecos --no-charts
+```
 
 ## ドキュメント
 

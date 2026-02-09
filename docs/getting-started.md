@@ -49,7 +49,8 @@ uv run pytest tests/ -v
 
 | スキル | 説明 | 使用例 |
 |---|---|---|
-| `/corporate-report` | 企業分析レポートとチャートを生成 | `/corporate-report 5819 カナレ電気` |
+| `/corporate-report` | 企業分析レポートを生成 | `/corporate-report 5819 カナレ電気` |
+| `/build-report` | report.md からチャート付き HTML 生成 | `/build-report reports/5819_canare` |
 | `/download-edinet` | EDINET APIから書類をダウンロード | `/download-edinet 5819 カナレ電気` |
 | `/extract-data` | PDFから財務データを抽出 | `/extract-data path/to/report.pdf` |
 | `/update-report` | 既存レポートに新決算データを反映 | `/update-report reports/5819_canare` |
@@ -64,8 +65,11 @@ uv run pytest tests/ -v
 corporate-reports/
 ├── .env                    # APIキー（.gitignore済み）
 ├── .env.example            # APIキーのテンプレート
+├── assets/
+│   └── report.css         # 共通CSS（全レポートHTML が参照）
 ├── src/corporate_reports/  # Python パッケージ
 │   ├── edinet.py          # EDINET API クライアント
+│   ├── build_report.py    # report.md → report.html ビルド
 │   └── cli.py             # CLI エントリポイント
 ├── tests/                  # ユニットテスト
 ├── docs/                   # ドキュメント
@@ -73,8 +77,9 @@ corporate-reports/
 │   └── skills/            # Claude Code スキル定義
 └── reports/               # 企業レポート
     └── [証券コード]_[企業名]/
-        ├── report.md      # 分析レポート
-        ├── charts.html    # 財務チャート
+        ├── report.md      # 分析レポート（Markdown）
+        ├── report.html    # チャート付きレポート（ビルド生成）
+        ├── chart_config.json  # チャート定義（AI生成）
         └── data/          # 元データ（.gitignore済み）
             ├── pdf/
             ├── csv/

@@ -31,8 +31,53 @@ Claude Code で利用可能なスキルの詳細ガイド。
 ### 出力ファイル
 
 - `report.md` - 分析レポート
-- `charts.html` - インタラクティブな財務チャート
 - `data/` - 元データ（PDF, CSV, XBRL）
+
+生成後、`/build-report` でチャート付き HTML を生成可能。
+
+---
+
+## `/build-report`
+
+report.md からチャート付き report.html を生成する。
+
+### 使い方
+
+```
+/build-report [レポートディレクトリ]
+```
+
+### 例
+
+```
+/build-report reports/9991_jecos
+```
+
+### 処理内容
+
+1. report.md を読み、チャート候補テーブルを選定
+2. chart_config.json を生成（ECharts option 付き）
+3. `uv run corporate-reports build-report` を実行して HTML 生成
+4. 生成された HTML を検証
+
+### 出力ファイル
+
+- `chart_config.json` - チャート定義（AI 生成）
+- `report.html` - チャート付き HTML レポート
+
+### CLI から直接実行
+
+```bash
+# チャート付き
+uv run corporate-reports build-report reports/9991_jecos
+
+# テキストのみ（chart_config.json を無視）
+uv run corporate-reports build-report reports/9991_jecos --no-charts
+```
+
+### CSS カスタマイズ
+
+HTML のスタイルは `assets/report.css` で一元管理。全レポートがこのファイルを参照するため、CSS 変更が即反映される。
 
 ---
 
@@ -209,18 +254,20 @@ PDF から財務データを抽出して構造化する。
 
 ```
 /corporate-report 5819 カナレ電気
+/build-report reports/5819_canare
 ```
 
-一度に全工程を実行。
+レポート生成後、チャート付き HTML を作成。
 
 ### 2. 既存企業の決算を更新する
 
 ```
 /update-report reports/5819_canare
 /update-price reports/5819_canare 1250
+/build-report reports/5819_canare
 ```
 
-最新決算を反映後、株価を更新。
+最新決算を反映後、株価を更新し、HTML を再ビルド。
 
 ### 3. 複数企業を比較する
 
