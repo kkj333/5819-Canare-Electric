@@ -17,6 +17,9 @@ fi
 # プロジェクトディレクトリに移動
 cd "$CLAUDE_PROJECT_DIR" || exit 0
 
+# ruff check --fix実行（未使用import等を自動修正）
+uv tool run ruff check --fix "$FILE_PATH" 2>/dev/null
+
 # ruff format実行
 uv tool run ruff format "$FILE_PATH" 2>/dev/null
 
