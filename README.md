@@ -1,7 +1,6 @@
 # 企業分析レポート
 
 [![CI](https://github.com/kkj333/corporate-reports/actions/workflows/ci.yml/badge.svg)](https://github.com/kkj333/corporate-reports/actions/workflows/ci.yml)
-[![codecov](https://codecov.io/gh/kkj333/corporate-reports/branch/main/graph/badge.svg)](https://codecov.io/gh/kkj333/corporate-reports)
 
 上場企業の分析レポート集。有価証券報告書・決算短信に基づく独自分析。
 
