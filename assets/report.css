@@ -14,7 +14,7 @@ body {
   color: var(--fg);
   background: var(--bg);
   line-height: 1.8;
-  max-width: 960px;
+  max-width: 1200px;
   margin: 0 auto;
   padding: 2rem 1.5rem;
 }
@@ -76,8 +76,88 @@ tr:nth-child(even) { background: #fafbfc; }
 .chart-box {
   width: 100%;
 }
+/* --- 2カラムレイアウト --- */
+.layout-wrapper {
+  display: flex;
+  gap: 2rem;
+}
+.report-content {
+  flex: 1;
+  min-width: 0;
+  max-width: 960px;
+}
+
+/* --- サイドバーTOC --- */
+.toc-sidebar {
+  width: 240px;
+  flex-shrink: 0;
+  position: sticky;
+  top: 1rem;
+  max-height: calc(100vh - 2rem);
+  overflow-y: auto;
+  font-size: 0.85rem;
+  padding-right: 1rem;
+  border-right: 1px solid var(--border);
+}
+.toc-sidebar ul { list-style: none; }
+.toc-sidebar li { margin: 0.3rem 0; }
+.toc-sidebar a {
+  color: var(--fg);
+  opacity: 0.6;
+  transition: opacity 0.2s;
+}
+.toc-sidebar a:hover { opacity: 1; }
+.toc-sidebar a.active {
+  color: var(--accent);
+  opacity: 1;
+  font-weight: 600;
+}
+.toc-sidebar .toc-h3 { padding-left: 1rem; }
+
+/* ハンバーガーボタン（デスクトップでは非表示） */
+.toc-toggle { display: none; }
+
+/* --- モバイル（1024px以下） --- */
+@media (max-width: 1024px) {
+  .layout-wrapper { display: block; }
+  .toc-sidebar {
+    position: fixed;
+    top: 0; left: -280px;
+    width: 280px;
+    height: 100vh;
+    background: var(--bg);
+    z-index: 1000;
+    border-right: 1px solid var(--border);
+    padding: 1rem;
+    transition: left 0.3s ease;
+  }
+  .toc-sidebar.open { left: 0; }
+  .toc-toggle {
+    display: block;
+    position: fixed;
+    top: 0.5rem; left: 0.5rem;
+    z-index: 1001;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 0.4rem 0.6rem;
+    font-size: 1.2rem;
+    cursor: pointer;
+  }
+  .toc-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.3);
+    z-index: 999;
+  }
+  .toc-overlay.open { display: block; }
+}
+
 /* 印刷用 */
 @media print {
+  .toc-sidebar, .toc-toggle, .toc-overlay { display: none !important; }
+  .layout-wrapper { display: block; }
   body { max-width: 100%; padding: 1rem; }
   .chart-container { break-inside: avoid; }
   table { font-size: 0.8rem; }

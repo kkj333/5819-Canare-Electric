@@ -65,6 +65,11 @@ def main():
         action="store_true",
         help="チャートなしでHTML生成（chart_config.jsonを無視）",
     )
+    build_parser.add_argument(
+        "--no-toc",
+        action="store_true",
+        help="サイドバーTOCなしでHTML生成",
+    )
 
     args = parser.parse_args()
 
@@ -77,6 +82,7 @@ def main():
             output = build_report(
                 report_dir=Path(args.report_dir),
                 no_charts=args.no_charts,
+                no_toc=args.no_toc,
             )
             print(
                 json.dumps(

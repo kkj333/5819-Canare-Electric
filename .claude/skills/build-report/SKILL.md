@@ -96,9 +96,15 @@ uv run corporate-reports build-report $0
 2. **チャート div が正しい位置に挿入されているか**: 各 `chart-container` が対応するセクション付近にある
 3. **ECharts スクリプトが含まれているか**: `echarts.init` の呼び出しがチャート数と一致する
 4. **メタ情報が正しいか**: `<title>` タグに企業名・証券コードが含まれる
+5. **サイドバーTOCが生成されているか**: `toc-sidebar` 内に h2/h3 見出しへのリンクが存在する
 
 問題があれば chart_config.json を修正して Phase 3 を再実行する。
 
 ## CSS カスタマイズ
 
 HTMLのスタイルは `assets/report.css` で一元管理されている。全レポートの HTML が相対パスでこのファイルを参照するため、CSS を変更するだけで全レポートに即反映される（再ビルド不要）。
+
+## オプション
+
+- `--no-charts`: チャートなしでビルド（chart_config.json を無視）
+- `--no-toc`: サイドバーTOCなしでビルド

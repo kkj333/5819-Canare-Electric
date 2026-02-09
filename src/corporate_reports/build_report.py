@@ -29,8 +29,9 @@ HTML_TEMPLATE = """\
 <link rel="stylesheet" href="{css_path}">
 </head>
 <body>
-{body}
+{layout}
 {chart_script}
+{toc_script}
 </body>
 </html>
 """
@@ -66,6 +67,60 @@ def _slugify(value: str, separator: str = "-") -> str:
     value = value.strip().lower()
     value = re.sub(r"[\s\u3000]+", separator, value)
     return value
+
+
+# ---------------------------------------------------------------------------
+# TOC サイドバー生成
+# ---------------------------------------------------------------------------
+
+
+def build_toc(html_body: str) -> str:
+    """HTML body から h2/h3 見出しを抽出し、サイドバー用 <nav> HTML を生成する。"""
+    soup = BeautifulSoup(html_body, "html.parser")
+    headings = soup.find_all(re.compile(r"^h[23]$"))
+    if not headings:
+        return ""
+
+    items: list[str] = []
+    in_h2_group = False
+
+    for h in headings:
+        slug = h.get("id", "")
+        text = h.get_text(strip=True)
+        if not slug:
+            continue
+
+        if h.name == "h2":
+            # 前の h2 グループを閉じる
+            if in_h2_group:
+                items.append("</ul></li>")
+            items.append(f'<li class="toc-h2"><a href="#{slug}">{text}</a>')
+            items.append("<ul>")
+            in_h2_group = True
+        else:
+            # h3
+            items.append(f'<li class="toc-h3"><a href="#{slug}">{text}</a></li>')
+
+    # 最後のグループを閉じる
+    if in_h2_group:
+        items.append("</ul></li>")
+
+    return '<nav class="toc-sidebar"><ul>\n' + "\n".join(items) + "\n</ul></nav>"
+
+
+def wrap_layout(toc_html: str, body_html: str) -> str:
+    """TOC + コンテンツを 2 カラムレイアウト用 div でラップする。"""
+    parts = [
+        '<button class="toc-toggle" aria-label="目次を開く">&#9776;</button>',
+        '<div class="toc-overlay"></div>',
+        '<div class="layout-wrapper">',
+        toc_html,
+        '<main class="report-content">',
+        body_html,
+        "</main>",
+        "</div>",
+    ]
+    return "\n".join(parts)
 
 
 # ---------------------------------------------------------------------------
@@ -228,17 +283,19 @@ def build_echarts_script(charts: list[dict]) -> str:
 
 
 def render_full_html(
-    body: str,
+    layout: str,
     chart_script: str,
     company_name: str,
     company_code: str,
     css_path: str = "../../assets/report.css",
+    toc_script: str = "",
 ) -> str:
     """最終 HTML を組み立てる。CSS は外部参照。"""
     return HTML_TEMPLATE.format(
         css_path=css_path,
-        body=body,
+        layout=layout,
         chart_script=chart_script,
+        toc_script=toc_script,
         company_name=company_name,
         company_code=company_code,
     )
@@ -263,7 +320,9 @@ def extract_meta(md_text: str) -> tuple[str, str]:
 # ---------------------------------------------------------------------------
 
 
-def build_report(report_dir: Path, no_charts: bool = False) -> Path:
+def build_report(
+    report_dir: Path, no_charts: bool = False, no_toc: bool = False
+) -> Path:
     """report.md (+ chart_config.json) から report.html を生成する。"""
     report_dir = Path(report_dir)
     md_path = report_dir / "report.md"
@@ -294,11 +353,22 @@ def build_report(report_dir: Path, no_charts: bool = False) -> Path:
     if charts:
         html_body = inject_charts(html_body, charts)
 
+    # TOC サイドバー生成 & レイアウトラップ
+    toc_script = ""
+    if not no_toc:
+        toc_html = build_toc(html_body)
+        layout = wrap_layout(toc_html, html_body)
+        toc_script = '<script src="../../assets/toc.js"></script>'
+    else:
+        layout = html_body
+
     # ECharts スクリプト生成
     chart_script = build_echarts_script(charts)
 
     # 最終 HTML 組み立て
-    full_html = render_full_html(html_body, chart_script, company_name, company_code)
+    full_html = render_full_html(
+        layout, chart_script, company_name, company_code, toc_script=toc_script
+    )
 
     output_path.write_text(full_html, encoding="utf-8")
     return output_path

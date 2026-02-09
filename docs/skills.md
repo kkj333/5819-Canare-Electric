@@ -73,6 +73,9 @@ uv run corporate-reports build-report reports/9991_jecos
 
 # テキストのみ（chart_config.json を無視）
 uv run corporate-reports build-report reports/9991_jecos --no-charts
+
+# サイドバーTOCなし
+uv run corporate-reports build-report reports/9991_jecos --no-toc
 ```
 
 ### CSS カスタマイズ

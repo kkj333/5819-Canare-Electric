@@ -277,3 +277,82 @@ class TestBuildReport:
         assert output.exists()
         html = output.read_text(encoding="utf-8")
         assert "echarts.min.js" not in html
+
+    def test_toc_included_by_default(self, tmp_path):
+        md_content = "# テスト企業（1234）\n\n## セクション1\n\nテスト\n\n## セクション2\n\nテスト\n"
+        (tmp_path / "report.md").write_text(md_content, encoding="utf-8")
+        output = build_report(tmp_path, no_charts=True)
+        html = output.read_text(encoding="utf-8")
+        assert "toc-sidebar" in html
+        assert "layout-wrapper" in html
+        assert "report-content" in html
+        assert "toc.js" in html
+
+    def test_no_toc_flag(self, tmp_path):
+        md_content = "# テスト企業（1234）\n\n## セクション1\n\nテスト\n"
+        (tmp_path / "report.md").write_text(md_content, encoding="utf-8")
+        output = build_report(tmp_path, no_charts=True, no_toc=True)
+        html = output.read_text(encoding="utf-8")
+        assert "toc-sidebar" not in html
+        assert "toc.js" not in html
+
+
+# ---------------------------------------------------------------------------
+# build_toc
+# ---------------------------------------------------------------------------
+
+
+class TestBuildToc:
+    def test_h2_h3_extraction(self):
+        html = (
+            '<h1 id="title">タイトル</h1>'
+            '<h2 id="sec1">セクション1</h2>'
+            '<h3 id="sub1">サブセクション1</h3>'
+            '<h2 id="sec2">セクション2</h2>'
+            '<h4 id="deep">深い見出し</h4>'
+        )
+        from corporate_reports.build_report import build_toc
+
+        toc = build_toc(html)
+        assert "toc-sidebar" in toc
+        assert 'href="#sec1"' in toc
+        assert 'href="#sub1"' in toc
+        assert 'href="#sec2"' in toc
+        # h1 と h4 は含まれない
+        assert 'href="#title"' not in toc
+        assert 'href="#deep"' not in toc
+
+    def test_nested_structure(self):
+        html = (
+            '<h2 id="a">A</h2><h3 id="a1">A1</h3><h3 id="a2">A2</h3><h2 id="b">B</h2>'
+        )
+        from corporate_reports.build_report import build_toc
+
+        toc = build_toc(html)
+        assert 'class="toc-h2"' in toc
+        assert 'class="toc-h3"' in toc
+
+    def test_empty_body(self):
+        from corporate_reports.build_report import build_toc
+
+        assert build_toc("<p>本文のみ</p>") == ""
+
+
+# ---------------------------------------------------------------------------
+# wrap_layout
+# ---------------------------------------------------------------------------
+
+
+class TestWrapLayout:
+    def test_structure(self):
+        from corporate_reports.build_report import wrap_layout
+
+        toc = '<nav class="toc-sidebar"><ul></ul></nav>'
+        body = "<p>本文</p>"
+        result = wrap_layout(toc, body)
+        assert "layout-wrapper" in result
+        assert "toc-sidebar" in result
+        assert "report-content" in result
+        assert "toc-toggle" in result
+        assert "toc-overlay" in result
+        assert "<p>本文</p>" in result
