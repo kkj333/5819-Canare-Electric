@@ -23,7 +23,5 @@ uv tool run ruff check --fix "$FILE_PATH" 2>/dev/null
 # ruff format実行
 uv tool run ruff format "$FILE_PATH" 2>/dev/null
 
-# ty check実行
-uv run ty check 2>/dev/null
-
-exit 0
+# ty check実行（エラー時はhookを失敗させる）
+uv run ty check src/ tests/

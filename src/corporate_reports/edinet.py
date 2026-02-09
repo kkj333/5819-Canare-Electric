@@ -38,20 +38,19 @@ def check_api_key() -> str:
     import sys
 
     key = _get_api_key()
-    if not key:
-        print("ERROR: EDINET_API_KEY が設定されていません", file=sys.stderr)
-        print("", file=sys.stderr)
-        print("設定方法:", file=sys.stderr)
-        print("1. プロジェクトルートに .env ファイルを作成", file=sys.stderr)
-        print("2. 以下の内容を追加:", file=sys.stderr)
-        print("   EDINET_API_KEY=あなたのAPIキー", file=sys.stderr)
-        print("", file=sys.stderr)
-        print("APIキーの取得:", file=sys.stderr)
-        print(
-            "https://api.edinet-fsa.go.jp/api/auth/index.aspx?mode=1", file=sys.stderr
-        )
-        sys.exit(1)
-    return key
+    if key:
+        return key
+
+    print("ERROR: EDINET_API_KEY が設定されていません", file=sys.stderr)
+    print("", file=sys.stderr)
+    print("設定方法:", file=sys.stderr)
+    print("1. プロジェクトルートに .env ファイルを作成", file=sys.stderr)
+    print("2. 以下の内容を追加:", file=sys.stderr)
+    print("   EDINET_API_KEY=あなたのAPIキー", file=sys.stderr)
+    print("", file=sys.stderr)
+    print("APIキーの取得:", file=sys.stderr)
+    print("https://api.edinet-fsa.go.jp/api/auth/index.aspx?mode=1", file=sys.stderr)
+    sys.exit(1)
 
 
 def search_documents(
