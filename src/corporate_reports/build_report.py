@@ -12,7 +12,7 @@ import sys
 from pathlib import Path
 
 import markdown
-from bs4 import BeautifulSoup, NavigableString
+from bs4 import BeautifulSoup
 
 
 # ---------------------------------------------------------------------------
@@ -172,7 +172,7 @@ def _insert_after_element(element, new_tag):
 
 def _build_chart_div(chart_id: str, title: str, note: str, height: int) -> str:
     """チャート用 HTML div を生成する。"""
-    parts = [f'<div class="chart-container">']
+    parts = ['<div class="chart-container">']
     if title:
         parts.append(f'  <div class="chart-title">{title}</div>')
     if note:
@@ -206,16 +206,16 @@ def build_echarts_script(charts: list[dict]) -> str:
         if not option:
             continue
         option_json = json.dumps(option, ensure_ascii=False, indent=2)
-        lines.append(f"  (function() {{")
+        lines.append("  (function() {")
         lines.append(f"    var el = document.getElementById('{chart_id}');")
-        lines.append(f"    if (!el) return;")
-        lines.append(f"    var chart = echarts.init(el);")
+        lines.append("    if (!el) return;")
+        lines.append("    var chart = echarts.init(el);")
         lines.append(f"    var option = {option_json};")
-        lines.append(f"    chart.setOption(option);")
+        lines.append("    chart.setOption(option);")
         lines.append(
-            f"    window.addEventListener('resize', function() {{ chart.resize(); }});"
+            "    window.addEventListener('resize', function() { chart.resize(); });"
         )
-        lines.append(f"  }})();")
+        lines.append("  })();")
 
     lines.append("});")
     lines.append("</script>")
