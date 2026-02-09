@@ -120,6 +120,10 @@ ModuleNotFoundError: No module named 'requests'
 uv run pytest tests/ -vv
 ```
 
+## 設計思想
+
+レポートのアーキテクチャと設計意図については [architecture.md](architecture.md) を参照。
+
 ## 参考リンク
 
 - [EDINET API 仕様書](https://disclosure2dl.edinet-fsa.go.jp/guide/static/disclosure/download/ESE140206.pdf)
